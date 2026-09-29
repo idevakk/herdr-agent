@@ -89,8 +89,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 # - Member of sudo group with NOPASSWD for dependency installs
 # - Cannot escape the container (no docker group, no docker.sock)
 # - Home directory at /home/developer
-RUN groupadd -f -g 1000 developer \
-    && useradd -m -u 1000 -g developer -G sudo -s /bin/bash -o developer \
+RUN userdel -r ubuntu 2>/dev/null || true \
+    && groupadd -g 1000 developer \
+    && useradd -m -u 1000 -g developer -G sudo -s /bin/bash developer \
     && echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer \
     && chmod 0440 /etc/sudoers.d/developer
 
