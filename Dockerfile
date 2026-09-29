@@ -115,7 +115,7 @@ RUN mkdir -p /run/sshd \
 # ── Install Herdr (the agent runtime / multiplexer) ───────────────────────────
 # Herdr is the core of this setup — it holds terminals open, detects agents,
 # manages workspaces, and provides the CLI/socket API for agent orchestration.
-RUN curl -fsSL https://herdr.dev/install.sh | INSTALL_DIR=/usr/local/bin sh
+RUN curl -fsSL https://herdr.dev/install.sh | HERDR_INSTALL_DIR=/usr/local/bin sh
 
 # ── Install moshi-hook (mobile agent bridge) ─────────────────────────────────
 # moshi-hook enables remote agent approvals and status from the Moshi mobile app.
