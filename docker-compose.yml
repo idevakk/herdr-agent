@@ -86,7 +86,7 @@ services:
     # ── Filesystem Restrictions ─────────────────────────────────────────────
     # /tmp is writable (agents need it), but we use tmpfs for security
     tmpfs:
-      - /tmp:size=512M
+      - /tmp:size=512M,exec
       - /run:size=64M
 
     # ── Logging ─────────────────────────────────────────────────────────────
