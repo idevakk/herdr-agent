@@ -56,6 +56,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     file \
     less \
     htop \
+    mosh \
+    xdg-utils \
     && true
 # NOTE: We intentionally keep apt lists (/var/lib/apt/lists) so that
 # agents can run `sudo apt-get install -y <package>` without needing
@@ -170,6 +172,7 @@ ENV PATH="/home/developer/.local/bin:/usr/local/bin:${PATH}"
 RUN echo 'export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"' >> ~/.bashrc \
     && echo 'export EDITOR=nano' >> ~/.bashrc \
     && echo 'export TERM=xterm-256color' >> ~/.bashrc \
+    && echo 'export MOSHI_MULTIPLEXER=herdr' >> ~/.bashrc \
     && echo '# Herdr auto-start hint: run `herdr` to start the agent runtime' >> ~/.bashrc \
     && echo 'alias ll="ls -la"' >> ~/.bashrc \
     && echo 'alias projects="cd ~/projects"' >> ~/.bashrc
