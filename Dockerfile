@@ -79,10 +79,26 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && cp /root/.local/bin/uv /usr/local/bin/uv \
     && cp /root/.local/bin/uvx /usr/local/bin/uvx 2>/dev/null || true
 
-# ── Install Node.js 22 LTS (agents often need it) ────────────────────────────
+# ── Install PHP 8.3 & Laravel Dependencies ───────────────────────────────────
+# Ubuntu 24.04 natively ships with PHP 8.3
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    php8.3-cli \
+    php8.3-mbstring \
+    php8.3-xml \
+    php8.3-bcmath \
+    php8.3-curl \
+    php8.3-zip \
+    php8.3-mysql \
+    php8.3-sqlite3 \
+    php8.3-intl \
+    php8.3-gd \
+    php-redis \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# ── Install Node.js 22 LTS & Global Agents ───────────────────────────────────
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
-    && npm install -g npm@latest
+    && npm install -g npm@latest @anthropic-ai/claude-code
 
 # ── Create restricted "developer" user ────────────────────────────────────────
 # - UID 1000 (standard non-root)
