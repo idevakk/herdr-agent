@@ -100,7 +100,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
 # ── Install Node.js 22 LTS & Global Agents ───────────────────────────────────
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
-    && npm install -g npm@latest @anthropic-ai/claude-code
+    && npm install -g npm@latest @anthropic-ai/claude-code oh-my-pi @kilocode/cli @earendil-works/pi-coding-agent
 
 # ── Create restricted "developer" user ────────────────────────────────────────
 # - UID 1000 (standard non-root)
