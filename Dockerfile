@@ -101,7 +101,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
 # ── Install Node.js 22 LTS & Global Agents ───────────────────────────────────
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
-    && npm install -g npm@latest @anthropic-ai/claude-code oh-my-pi @kilocode/cli @earendil-works/pi-coding-agent
+    && npm install -g npm@latest @anthropic-ai/claude-code oh-my-pi @kilocode/cli @earendil-works/pi-coding-agent opencode-ai
 
 # ── Create restricted "developer" user ────────────────────────────────────────
 # - UID 1000 (standard non-root)
@@ -151,6 +151,8 @@ RUN chmod +x /usr/local/bin/herdr 2>/dev/null || true \
 RUN mkdir -p /home/developer/projects \
     && mkdir -p /home/developer/.config/herdr \
     && mkdir -p /home/developer/.local/bin \
+    && mkdir -p /home/developer/.pi/agent/extensions \
+    && mkdir -p /home/developer/.config/kilo \
     && chown -R developer:developer /home/developer
 
 # ── systemctl shim (Docker has no systemd) ───────────────────────────────────
