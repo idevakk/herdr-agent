@@ -40,6 +40,7 @@ fi
 
 # ── Start SSH server ────────────────────────────────────────────────────────
 echo "[init] Starting SSH server..."
+mkdir -p /run/sshd
 /usr/sbin/sshd
 
 # ── Start Herdr server as developer user (background) ───────────────────────
