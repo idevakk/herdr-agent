@@ -1,0 +1,109 @@
+# =============================================================================
+# Herdr Agent Runtime — Docker Compose
+# =============================================================================
+# Deploys a secure, resource-limited container for multi-agent orchestration
+# with Herdr (agent runtime) and Moshi (mobile bridge).
+#
+# Compatible with: Docker Compose v2, Dokploy, Portainer, Coolify
+# =============================================================================
+
+services:
+  herdr-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: herdr-agent-runtime
+    hostname: herdr-agent
+    restart: unless-stopped
+
+    # ── Resource Limits ─────────────────────────────────────────────────────
+    # Configurable via CPU_LIMIT and RAM_LIMIT in .env
+    deploy:
+      resources:
+        limits:
+          cpus: "${CPU_LIMIT:-2.0}"
+          memory: ${RAM_LIMIT:-4G}
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+
+    # ── Ports ───────────────────────────────────────────────────────────────
+    # Configurable via SSH_PORT in .env (default: 2224)
+    ports:
+      - "${SSH_PORT:-2224}:22"
+
+    # ── Environment Variables ───────────────────────────────────────────────
+    environment:
+      # Change the default developer password (REQUIRED for production!)
+      - DEVELOPER_PASSWORD=${DEVELOPER_PASSWORD:-agent2024}
+      # Optional: paste your Moshi pairing token here
+      - MOSHI_HOOK_TOKEN=${MOSHI_HOOK_TOKEN:-}
+      # Optional: paste SSH public key(s) for key-based auth
+      - SSH_AUTHORIZED_KEYS=${SSH_AUTHORIZED_KEYS:-}
+      # Container timezone
+      - TZ=${TZ:-UTC}
+
+    # ── Volumes ─────────────────────────────────────────────────────────────
+    # Persist developer home (projects, configs, Herdr state)
+    volumes:
+      - herdr-home:/home/developer
+      # Optional: mount your SSH authorized_keys file directly
+      # - ./authorized_keys:/home/developer/.ssh/authorized_keys:ro
+
+    # ── Security — Container Isolation ──────────────────────────────────────
+    # These settings ensure the container CANNOT escape to the host or
+    # interfere with other containers/services on your VPS.
+    # ── NO Docker Socket Access ─────────────────────────────────────────────
+    # We explicitly DO NOT mount /var/run/docker.sock.
+    # The container has zero visibility into other containers.
+
+    # ── Capabilities — Drop Everything, Add Only What's Needed ──────────────
+    cap_drop:
+      - ALL
+    cap_add:
+      # Required for SSH server (binding to port 22)
+      - NET_BIND_SERVICE
+      # Required for sudo / user switching
+      - SETUID
+      - SETGID
+      # Required for chown operations
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      # Required for SSH server to create PTYs
+      - SYS_CHROOT
+      # Required for process management
+      - KILL
+      # Required for sshd
+      - AUDIT_WRITE
+
+    # ── Network Isolation ───────────────────────────────────────────────────
+    # Use a dedicated bridge network. The container can reach the internet
+    # (agents need API access) but is isolated from other containers.
+    networks:
+      - herdr-net
+
+    # ── Filesystem Restrictions ─────────────────────────────────────────────
+    # /tmp is writable (agents need it), but we use tmpfs for security
+    tmpfs:
+      - /tmp:size=512M
+      - /run:size=64M
+
+    # ── Logging ─────────────────────────────────────────────────────────────
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ── Volumes ───────────────────────────────────────────────────────────────────
+volumes:
+  herdr-home:
+    driver: local
+
+# ── Networks ──────────────────────────────────────────────────────────────────
+networks:
+  herdr-net:
+    driver: bridge
+    # Isolated network — only this container lives here
+    internal: false  # Set to true if you don't need internet access
