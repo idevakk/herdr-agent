@@ -96,19 +96,37 @@ herdr agent start            # Start an agent
 | `MOSHI_HOOK_TOKEN` | _(empty)_ | Moshi pairing token from Settings → Hooks |
 | `TZ` | `UTC` | Container timezone |
 
-### SSH Key Authentication (Recommended)
+### Windows: Passwordless SSH Setup (Recommended)
 
-```bash
-# On your local machine:
-ssh-keygen -t ed25519 -C "herdr-agent"
+1. Open PowerShell on your Windows machine and generate a dedicated SSH key (press **Enter twice** to skip the passphrase):
+   ```powershell
+   ssh-keygen -t ed25519 -f "$env:USERPROFILE\.ssh\herdr_key"
+   ```
+2. Print your new public key and copy the output:
+   ```powershell
+   Get-Content "$env:USERPROFILE\.ssh\herdr_key.pub"
+   ```
+3. Add the copied key to the `SSH_AUTHORIZED_KEYS` environment variable in Dokploy (or your `.env` file).
+4. Open your SSH config file (`C:\Users\<your-username>\.ssh\config`) and add this block:
+   ```text
+   Host herdr
+       HostName <YOUR_VPS_IP>
+       Port 2224
+       User developer
+       IdentityFile ~/.ssh/herdr_key
+   ```
 
-# Add the public key to .env:
-SSH_AUTHORIZED_KEYS="ssh-ed25519 AAAAC3... your@email"
+### Windows: Instant Terminal Drop-in (`herdragent.cmd`)
 
-# Or mount it directly in docker-compose.yml:
-volumes:
-  - ./authorized_keys:/home/developer/.ssh/authorized_keys:ro
-```
+To create a global command that drops you instantly into the Herdr interface without typing SSH commands:
+
+1. In a directory that is in your Windows PATH (e.g., `C:\Users\<your-username>\Scripts`), create a file named `herdragent.cmd`.
+2. Add the following content:
+   ```cmd
+   @echo off
+   ssh -t herdr "herdr"
+   ```
+3. Now, you can open any Windows terminal and simply type `herdragent` to securely launch your workspace in one keystroke!
 
 ### Moshi Mobile Setup
 
