@@ -79,20 +79,22 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && cp /root/.local/bin/uv /usr/local/bin/uv \
     && cp /root/.local/bin/uvx /usr/local/bin/uvx 2>/dev/null || true
 
-# ── Install PHP 8.3 & Laravel Dependencies ───────────────────────────────────
-# Ubuntu 24.04 natively ships with PHP 8.3
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    php8.3-cli \
-    php8.3-mbstring \
-    php8.3-xml \
-    php8.3-bcmath \
-    php8.3-curl \
-    php8.3-zip \
-    php8.3-mysql \
-    php8.3-sqlite3 \
-    php8.3-intl \
-    php8.3-gd \
-    php-redis \
+# ── Install PHP 8.4 & Laravel Dependencies ───────────────────────────────────
+# Ubuntu 24.04 natively ships with 8.3, so we add the Ondrej PPA for 8.4
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common \
+    && LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php \
+    && apt-get update && apt-get install -y --no-install-recommends \
+    php8.4-cli \
+    php8.4-mbstring \
+    php8.4-xml \
+    php8.4-bcmath \
+    php8.4-curl \
+    php8.4-zip \
+    php8.4-mysql \
+    php8.4-sqlite3 \
+    php8.4-intl \
+    php8.4-gd \
+    php8.4-redis \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # ── Install Node.js 22 LTS & Global Agents ───────────────────────────────────
