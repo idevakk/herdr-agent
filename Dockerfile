@@ -101,7 +101,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
 # ── Install Node.js 22 LTS & Global Agents ───────────────────────────────────
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
-    && npm install -g npm@latest @anthropic-ai/claude-code oh-my-pi @kilocode/cli @earendil-works/pi-coding-agent opencode-ai
+    && npm install -g npm@latest @anthropic-ai/claude-code @kilocode/cli @earendil-works/pi-coding-agent @opencode/cli
 
 # ── Create restricted "developer" user ────────────────────────────────────────
 # - UID 1000 (standard non-root)
@@ -142,10 +142,15 @@ RUN curl -fsSL https://herdr.dev/install.sh | HERDR_INSTALL_DIR=/usr/local/bin s
 RUN curl -fsSL https://getmoshi.app/install.sh \
     | MOSHI_HOOK_SKIP_FIRST_RUN=1 INSTALL_DIR=/usr/local/bin sh
 
+# ── Install OMP (Oh My Pi / Agent Runtime) ───────────────────────────────────
+RUN curl -fsSL https://omp.sh/install | INSTALL_DIR=/usr/local/bin sh \
+    && cp -r /root/.local/bin/omp /usr/local/bin/omp 2>/dev/null || true
+
 # ── Ensure binaries are accessible to developer user ─────────────────────────
 RUN chmod +x /usr/local/bin/herdr 2>/dev/null || true \
     && chmod +x /usr/local/bin/moshi-hook 2>/dev/null || true \
-    && chmod +x /usr/local/bin/moshi 2>/dev/null || true
+    && chmod +x /usr/local/bin/moshi 2>/dev/null || true \
+    && chmod +x /usr/local/bin/omp 2>/dev/null || true
 
 # ── Create workspace directories ─────────────────────────────────────────────
 RUN mkdir -p /home/developer/projects \
