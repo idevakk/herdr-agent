@@ -56,7 +56,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     file \
     less \
     htop \
-    mosh \
     xdg-utils \
     && true
 # NOTE: We intentionally keep apt lists (/var/lib/apt/lists) so that
